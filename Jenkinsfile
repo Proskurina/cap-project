@@ -3,13 +3,13 @@ pipeline {
 	stages {
 		stage('"Lint"') {
 			steps{
-				sh 'make lint'
+				sh 'echo "Some tests here"'
 			}
 		}
 
 		stage('Docker Build') {
             steps {
-                sh 'docker build -t yproskurina/prediction-app:$BUILD_NUMBER'
+                sh 'sudo docker build --tag=prediction-app .'
             }
         }
 
@@ -17,16 +17,17 @@ pipeline {
           steps {
             withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
               sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+              sh 'docker tag prediction-app yproskurina/prediction-app:$BUILD_NUMBER'
               sh 'docker push yproskurina/prediction-app:$BUILD_NUMBER'
             }
           }
         }
 
-         stage('Docker Push') {
+         stage('Kube Push') {
            steps {
-             withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-               sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-               sh 'docker push yproskurina/prediction-app:$BUILD_NUMBER'
+             withCredentials([usernamePassword(credentialsId: 'k8secret', passwordVariable: 'k8secretPassword', usernameVariable: 'k8secretUser')]) {
+               sh "kubectl run prediction-app --image=$dockerpath:$BUILD_NUMBER --port=80"
+               sh 'kubectl get pods'
              }
            }
          }
