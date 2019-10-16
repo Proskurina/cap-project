@@ -1,0 +1,36 @@
+yana ~/Documents/project-ml-microservice-kubernetes 15:18 $ ./run_kubernetes.sh
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+deployment.apps/prediction-app created
+NAME                             READY   STATUS              RESTARTS   AGE
+prediction-app-c5f449b86-dfngc   0/1     ContainerCreating   0          0s
+error: unable to forward port because pod is not running. Current status=Pending
+yana ~/Documents/project-ml-microservice-kubernetes 15:18 $ ./run_kubernetes.sh
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+Error from server (AlreadyExists): deployments.apps "prediction-app" already exists
+NAME                             READY   STATUS    RESTARTS   AGE
+prediction-app-c5f449b86-dfngc   1/1     Running   0          10s
+Forwarding from 127.0.0.1:8000 -> 80
+Forwarding from [::1]:8000 -> 80
+Handling connection for 8000
+
+
+yana ~/Documents/project-ml-microservice-kubernetes 16:45 $ kubectl logs prediction-app-c5f449b86-ctbj6
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+ * Running on http://0.0.0.0:80/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 231-779-307
+[2019-10-13 15:45:07,283] INFO in app: JSON payload:
+ {'CHAS': {'0': 0}, 'RM': {'0': 6.575}, 'TAX': {'0': 296.0}, 'PTRATIO': {'0': 15.3}, 'B': {'0': 396.9}, 'LSTAT': {'0': 4.98}}
+[2019-10-13 15:45:07,285] INFO in app: Inference payload DataFrame:
+    CHAS     RM    TAX  PTRATIO      B  LSTAT
+0     0  6.575  296.0     15.3  396.9   4.98
+[2019-10-13 15:45:07,295] INFO in app: Scaling Payload:
+    CHAS     RM    TAX  PTRATIO      B  LSTAT
+0     0  6.575  296.0     15.3  396.9   4.98
+[2019-10-13 15:45:07,310] INFO in app: Output prediction: [20.35373177134412]
+127.0.0.1 - - [13/Oct/2019 15:45:07] "POST /predict HTTP/1.1" 200 -
